@@ -1,0 +1,44 @@
+--- 
+- name: update web servers
+  hosts: web
+  remote_user: yoan
+  become_method: sudo
+  tasks: 
+    apt: 
+      mode: "0600"
+      name: git
+      state: latest
+      update_cache: true
+    name: "Install git"
+
+    apt: 
+      name: sudo
+      state: latest
+    name: "Install Sudo"
+
+    apt: 
+      name: python3.6
+      state: latest
+    name: "Install Python 3.6"
+
+    apt: 
+      name: python-apt
+      state: latest
+    name: "Install python-apt"
+
+    apt: 
+      name: bash
+      state: latest
+    name: "Install bash"
+
+    name: "Creation user"
+    user: "name={{ user }}\" comment=\\'Mon user' shell=\"usr/bin/zsh\""
+    when: "user is undifined"
+
+    autorised_key: "user={{ user }} key=\"{{ lookup('file', '~/.ssh/id_rsa.pub') }}" 
+    name: "add ssh key"
+    when: "user is undifined"
+    
+    name: "{{ user }} will be sudoers"
+    templates: "src=templates/sudoers.j2 dest=etc/sudoers.d/{{ user }}-sudoers validate= 'visudo -cf %s'"
+    when: "user is defined"

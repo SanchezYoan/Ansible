@@ -1,0 +1,40 @@
+--- 
+-
+  hosts: proxy
+  remote_user: jane 
+  become : yes
+
+  # here we make a variable named "proxy_env" that is a dictionary
+  vars:
+    user: jane
+    proxy_env:
+      http_proxy: jane@51.103.105.249
+
+  tasks:
+
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: /etc/ssh/ssh_host_dsa_key.pub/on/yoan
+        dest: /home/yoan/on/jane
+        owner: jane
+        mode: '0600'
+
+    - name: Installation nginx
+      become: yes
+      apt:
+        name: nginx
+        
+      
+    - name: Start
+      become: yes
+      service:
+        name: nginx
+        state: started
+        enable: true
+
+    # - name: sup default
+    #   become: yes
+    #   files: 
+    #     path: /etc/nginx/sites_enabled/default
+    # notify: nginx reload
+    
