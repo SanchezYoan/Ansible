@@ -1,40 +1,62 @@
---- 
--
-  hosts: proxy
-  remote_user: jane 
-  become : yes
 
-  # here we make a variable named "proxy_env" that is a dictionary
-  vars:
-    user: jane
-    proxy_env:
-      http_proxy: jane@51.103.105.249
+# - hosts: apache
+#   remote_user: jane 
+#   become : yes
 
+- hosts: apache
+  remote_user: root
+  become_method: sudo
+  become: yes
   tasks:
+    - name: run echo command
+      command: /bin/echo hello world
 
-    - name: Copy file with owner and permissions
-      ansible.builtin.copy:
-        src: /etc/ssh/ssh_host_dsa_key.pub/on/yoan
-        dest: /home/yoan/on/jane
-        owner: jane
-        mode: '0600'
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
+  # vars:
+  #   http_port: 80
+  #   domain: buzut.fr
 
-    - name: Installation nginx
-      become: yes
-      apt:
-        name: nginx
-        
-      
-    - name: Start
-      become: yes
-      service:
-        name: nginx
-        state: started
-        enable: true
+  #   # nom de l'utilisateur du compte (lance celui du .ssh/conf par défaut)
+  #   remote_user: root
 
-    # - name: sup default
-    #   become: yes
-    #   files: 
-    #     path: /etc/nginx/sites_enabled/default
-    # notify: nginx reload
-    
+  #   # ici débute la liste des tâches
+  #   tasks:
+
+  #   # nom d'une tâche
+  #   - name: ensure server is up to date
+  #     # nom du module à utiliser
+  #     apt:
+  #       update_cache: yes
+  #       upgrade: full
+
+  #   # installons apache
+  #   - name: install apache2
+  #     # il existe une syntaxe alternative, plus condensée
+  #     # apt: name=apache2 update_cache=yes state=latest
+
+  #     apt:
+  #       name: apache2
+  #       update_cache: yes
+  #       state: latest
+
+  #   # s'assurer que le mod rewrite est actif (l'activer sinon)
+  #   - name: enabled mod_rewrite
+  #     apache2_module:
+  #       name: rewrite
+  #       state: present
+
+  #   # le module template fonctionne de manière similaire à copy (vu plus haut)
+  #   # mais il injecte dynamiquement les variables nécessaires
+  #   - name: write the apache config file
+  #     template:
+  #       src: /Users/Buzut/.ansible/templates/vhost.conf
+  #       dest: /etc/apache2/sites-available/buzut.conf
+
+  #   - name: enable vhost
+  #     command: a2ensite buzut
+
+  #   - name: restart apache
+  #     service:
+  #       name: httpd
+  #       state: restarted
