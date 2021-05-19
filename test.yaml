@@ -1,8 +1,9 @@
 - name: web servers
-  hosts: web
-  become_method: sudo
-  remote_user: yoan
+  hosts: webapp
   become: yes
+  vars:
+    users: 
+      - Eren
   tasks: 
     - name: git install
       apt:
@@ -35,12 +36,35 @@
 
     - name: création de user
       user:
-        name: Eren
-        state: present
-        password: "{{ 'Eren' | password_hash('sha512') }}"  
+        name: "{{ item }}"
+        groups: sudo, root
+        shell: /bin/bash
+        generate_ssh_key: yes  
+        append: no
+      loop: "{{ users }}"
 
-    - name: ajouter un utilisateur
-      user:
-        shell: /usr/sbin/nologin
-        name: toto
+
+    - name: "Prend le dossier source sur ma vm ou se situe la clef pu, le copie sur ma machine hôte"
+      ansible.builtin.fetch:
+        src: /home/Eren/.ssh/id_rsa.pub
+        dest: /home/shadowsleaders/
+        flat: yes
+
+    - name: "take autorized_key in file"
+      ansible.posix.authorized_key:
+        user: "{{ item }}"
+        state: present
+        key: "{{ lookup('file', '/home/shadowsleaders/id_rsa.pub') }}"
+      loop: "{{ users }}"
+  
+
+
+    # - name: myalias
+    #   copy:
+    #     src: /bashrc/alias
+    #     dest: "/home/{{ item }}/.bash_aliases"
+    #     force: yes
+    #     mode: 0664
+    #     whith_items: "{{ user }}"
+    
 
