@@ -59,12 +59,13 @@
   
 
 
-    # - name: myalias
-    #   copy:
-    #     src: /bashrc/alias
-    #     dest: "/home/{{ item }}/.bash_aliases"
-    #     force: yes
-    #     mode: 0664
-    #     whith_items: "{{ user }}"
+    - name: myalias
+      copy:
+        src: ./bashrc/alias
+        dest: "/home/{{ item }}/.bash_aliases"
+        force: yes
+        mode: 0664
+      loop: "{{ users }}"
+    
     
 

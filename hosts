@@ -41,11 +41,10 @@
 # leading 0s:
 
 #db-[99:101]-node.example.com
+[proxy]
+40.89.170.244  ansible_ssh_user=yoan ansible_ssh_private_key_file=~/home/shadowsleaders/.ssh/id_rsa
 
-#[web]
-#51.103.50.70
-
-#[apache]
-#dns-proxy.francecentral.cloudapp.azure.com     ansible_ssh_private_key_file=/mnt/c/Users/utilisateur/.ssh/id_rsa
 [webapp]
-51.103.50.70 ansible_connection=ssh ansible_user=yoan ansible_ssh_private_key_file=/home/shadowsleaders/Ansible_key.pem.txt
+51.103.50.70 ansible_connection=ssh ansible_user=Eren ansible_ssh_private_key_file=~/home/shadowsleaders/.ssh/id_rsa
+
+

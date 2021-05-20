@@ -2,10 +2,8 @@
 # - hosts: apache
 #   remote_user: jane 
 #   become : yes
-- name: proxy
-  hosts: apache
-  remote_user: yoan
-  become_method: sudo
+- name: Apache
+  hosts: proxy
   become: yes
   tasks:
     - name: run echo command
