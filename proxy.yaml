@@ -5,56 +5,31 @@
 - name: Apache
   hosts: proxy
   become: yes
+  vars:
+    users: 
+      - Eren
+
   tasks:
     - name: run echo command
       command: /bin/echo hello world
 
     - name: install apache2
       apt: name=apache2 update_cache=yes state=latest
-  # vars:
-  #   http_port: 80
-  #   domain: buzut.fr
 
-  #   # nom de l'utilisateur du compte (lance celui du .ssh/conf par défaut)
-  #   remote_user: root
+    - name: Upgrade System
+      apt: 
+        upgrade: dist 
+        update_cache: yes
 
-  #   # ici débute la liste des tâches
-  #   tasks:
+    - name: apache2 listen on port 80
+      lineinfile: dest=/etc/apache2/ports.conf regexp="^Listen 80" line="Listen 80" state=present
+      notify:
+        - restart apache2
 
-  #   # nom d'une tâche
-  #   - name: ensure server is up to date
-  #     # nom du module à utiliser
-  #     apt:
-  #       update_cache: yes
-  #       upgrade: full
+    - name: apache2 virtualhost on port 443
+      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:443>" line="<VirtualHost *:443>" state=present
+      notify:
+        - restart apache2
 
-  #   # installons apache
-  #   - name: install apache2
-  #     # il existe une syntaxe alternative, plus condensée
-  #     # apt: name=apache2 update_cache=yes state=latest
 
-  #     apt:
-  #       name: apache2
-  #       update_cache: yes
-  #       state: latest
-
-  #   # s'assurer que le mod rewrite est actif (l'activer sinon)
-  #   - name: enabled mod_rewrite
-  #     apache2_module:
-  #       name: rewrite
-  #       state: present
-
-  #   # le module template fonctionne de manière similaire à copy (vu plus haut)
-  #   # mais il injecte dynamiquement les variables nécessaires
-  #   - name: write the apache config file
-  #     template:
-  #       src: /Users/Buzut/.ansible/templates/vhost.conf
-  #       dest: /etc/apache2/sites-available/buzut.conf
-
-  #   - name: enable vhost
-  #     command: a2ensite buzut
-
-  #   - name: restart apache
-  #     service:
-  #       name: httpd
-  #       state: restarted
+  
